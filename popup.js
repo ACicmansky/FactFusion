@@ -1,11 +1,10 @@
 // Popup script
+import config from './config.js';
+
 document.addEventListener('DOMContentLoaded', function() {
   const summarizeBtn = document.getElementById('summarizeBtn');
   const loadingSpinner = document.getElementById('loadingSpinner');
   const summaryDiv = document.getElementById('summary');
-
-  // Hardcoded API key - replace with your actual API key from Hugging Face
-  const API_KEY = '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';
 
   summarizeBtn.addEventListener('click', async () => {
     // Show loading state
@@ -113,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
+          'Authorization': `Bearer ${config.API_KEY}`
         },
         body: JSON.stringify({
           inputs: result.substring(0, 1000), // Limit input size
@@ -125,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       const data = await response.json();
-      
+      console.log('API Response:', data);
+
       // Check if the API returned an error
       if (data.error) {
         throw new Error(data.error);
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!summaryText) {
         throw new Error('No summary generated');
       }
-      
+
       summaryDiv.textContent = summaryText;
       summaryDiv.classList.remove('hidden');
     } catch (error) {
