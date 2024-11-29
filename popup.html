@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>FactFusion</title>
   <link rel="stylesheet" type="text/css" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
   <div class="container">
-    <h1>FactFusion</h1>
+    <div class="header">
+      <h1>FactFusion</h1>
+      <p class="subtitle">AI-powered fact checking</p>
+    </div>
     <div id="content">
-      <div id="loadingSpinner">Checking Facts...</div>
-      <div id="summary" class="summary-box hidden"></div>
+      <div id="loadingSpinner" class="hidden">
+        <div class="spinner"></div>
+        <p>Analyzing content...</p>
+      </div>
+      <div id="summary" class="summary-box hidden">
+        <div class="summary-header">
+          <svg class="icon" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <h2>Fact Check Results</h2>
+        </div>
+        <div class="summary-content"></div>
+      </div>
     </div>
   </div>
   <script type="module" src="config.js"></script>
   <script type="module" src="popup.js"></script>
 </body>
-
 </html>

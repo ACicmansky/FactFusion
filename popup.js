@@ -197,14 +197,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // Display the formatted text
-    summaryDiv.innerHTML = data;
+    const summaryContent = document.querySelector('.summary-content');
+    summaryContent.innerHTML = data;
+    loadingSpinner.classList.add('hidden');
     summaryDiv.classList.remove('hidden');
   } catch (error) {
     console.error('Extraction error:', error);
-    summaryDiv.textContent = 'Error extracting information: ' + error.message;
-    summaryDiv.classList.remove('hidden');
-  } finally {
-    // Hide loading state
     loadingSpinner.classList.add('hidden');
+    summaryDiv.classList.remove('hidden');
+    document.querySelector('.summary-content').innerHTML = 'Error extracting information: ' + error.message;
   }
 });
