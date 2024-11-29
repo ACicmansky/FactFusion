@@ -8,6 +8,30 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Function to delay execution
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+  // Function to generate a hash for the content
+  function generateHash(content) {
+    let hash = 0;
+    for (let i = 0; i < content.length; i++) {
+      const char = content.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return hash.toString();
+  }
+
+  // Function to get cached response
+  async function getCachedResponse(content) {
+    const hash = generateHash(content);
+    const cached = await chrome.storage.local.get(hash);
+    return cached[hash];
+  }
+
+  // Function to cache response
+  async function cacheResponse(content, response) {
+    const hash = generateHash(content);
+    await chrome.storage.local.set({ [hash]: response });
+  }
+
   // Function to query the model with retries
   async function queryModel(inputs) {
     const maxRetries = 5;
@@ -152,7 +176,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     Print {Output} directly without headings or extra formatting
     {Text}=\n\n${result}`;
 
-    const data = await queryModel(prompt);
+    // Check cache first
+    const cachedResponse = await getCachedResponse(result);
+    let data;
+    
+    if (cachedResponse) {
+      data = cachedResponse;
+      console.log('Using cached response');
+    } else {
+      data = await queryModel(prompt);
+      if (data) {
+        // Cache the successful response
+        await cacheResponse(result, data);
+      }
+    }
 
     // Check if the API returned an error
     if (!data) {

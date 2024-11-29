@@ -5,7 +5,8 @@
   "description": "A Chrome extension for creating summaries and fact checking them",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
     "https://api-inference.huggingface.co/*"
