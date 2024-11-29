@@ -26,8 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
             model: 'mistral-large-latest',
             messages: [{ role: 'user', content: inputs }],
             max_tokens: 1000,
-            temperature: 0.3,
-            top_p: 0.95
+            temperature: 0,
+            top_p: 1,
+            random_seed: 42
           })
         });
 
