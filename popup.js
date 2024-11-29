@@ -10,50 +10,40 @@ document.addEventListener('DOMContentLoaded', function () {
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   // Function to query the model with retries
-  async function queryModel(inputs, maxRetries = 3, initialDelay = 1000) {
-    let lastError;
-    let retryDelay = initialDelay;
+  async function queryModel(inputs) {
+    const maxRetries = 5;
+    const retryDelay = 1000; // 1 second
 
     for (let i = 0; i < maxRetries; i++) {
       try {
-        const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-large', {
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${config.API_KEY}`
           },
           body: JSON.stringify({
-            inputs,
-            parameters: {
-              max_length: 1000,
-              temperature: 0.3,
-              top_p: 0.95,
-              do_sample: true,
-              num_return_sequences: 1
-            }
+            model: 'mistral-large-latest',
+            messages: [{ role: 'user', content: inputs }],
+            max_tokens: 1000,
+            temperature: 0.3,
+            top_p: 0.95
           })
         });
 
         const data = await response.json();
 
-        // Check if model is loading
-        if (data.error && data.error.includes('loading')) {
-          console.log(`Model is loading, attempt ${i + 1} of ${maxRetries}. Waiting ${retryDelay}ms...`);
-          await delay(retryDelay);
-          retryDelay *= 2; // Exponential backoff
-          continue;
+        if (!response.ok) {
+          throw new Error(data.error?.message || 'API request failed');
         }
 
-        return data;
+        return data.choices[0].message.content.trim();
       } catch (error) {
-        lastError = error;
         console.error(`Attempt ${i + 1} failed:`, error);
+        if (i === maxRetries - 1) throw error;
         await delay(retryDelay);
-        retryDelay *= 2; // Exponential backoff
       }
     }
-
-    throw new Error(lastError?.message || 'Failed to get response after multiple retries');
   }
 
   summarizeBtn.addEventListener('click', async () => {
@@ -67,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
       // Execute content script to get page content
-      const [{ result }] = await chrome.scripting.executeScript({
+      let [{ result }] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         function: () => {
           function getTextContent(element) {
@@ -157,25 +147,21 @@ document.addEventListener('DOMContentLoaded', function () {
         throw new Error('No content found on the page');
       }
 
-      // Extract key information using Flan-T5 model with retry mechanism
-      const prompt = `Extract the most important information from the text, including key facts, critical details (names, dates, figures), and relevance, and present it concisely in a structured format: Summary, Key Points, and Significance. Text:\n\n${result.substring(0, 3000)}`;
+      result = result.length > 4000 ? result.substring(0, 4000) : result;
+      const prompt = `Analyze {Text} based on your knowledge base and training data, find false statements or unsupported claims, and for each, prepare {Output}: one or two sentences explaining inconsistencies.
+      Separate each statement in {Output} with <br><br> for empty lines.
+      Print {Output} directly without headings or extra formatting
+      {Text}=\n\n${result}`;
 
       const data = await queryModel(prompt);
 
       // Check if the API returned an error
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Format and display the key points
-      let mainPoints = Array.isArray(data) ? data[0].generated_text : data.generated_text;
-
-      if (!mainPoints) {
+      if (!data) {
         throw new Error('No key information extracted');
       }
 
       // Display the formatted text
-      summaryDiv.innerHTML = mainPoints;
+      summaryDiv.innerHTML = data;
       summaryDiv.classList.remove('hidden');
     } catch (error) {
       console.error('Extraction error:', error);
