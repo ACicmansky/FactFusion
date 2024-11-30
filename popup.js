@@ -4,6 +4,21 @@ import config from './config.js';
 document.addEventListener('DOMContentLoaded', async function () {
   const loadingSpinner = document.getElementById('loadingSpinner');
   const summaryDiv = document.getElementById('summary');
+  const clearCacheButton = document.getElementById('clearCache');
+
+  // Function to clear all cached responses
+  async function clearCache() {
+    try {
+      await chrome.storage.local.clear();
+      console.log('Cache cleared successfully');
+      // Optional: You could add a visual feedback here
+    } catch (error) {
+      console.error('Error clearing cache:', error);
+    }
+  }
+
+  // Add click event listener for clear cache button
+  clearCacheButton.addEventListener('click', clearCache);
 
   // Function to delay execution
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));

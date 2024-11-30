@@ -23,6 +23,16 @@ body {
 .header {
   text-align: center;
   margin-bottom: 24px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.title-section {
+  flex-grow: 1;
+  text-align: center;
 }
 
 h1 {
@@ -54,6 +64,33 @@ button {
   font-size: 14px;
   margin-bottom: 10px;
   width: 100%;
+}
+
+.clear-cache-btn {
+  background-color: transparent;
+  color: #6c757d;
+  border: none;
+  width: auto;
+  margin: 0;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.clear-cache-btn:hover {
+  background-color: #f8f9fa;
+  color: #dc3545;
+  transform: translateY(-1px);
+}
+
+.clear-cache-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 button:hover {
