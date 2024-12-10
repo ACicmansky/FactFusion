@@ -59,7 +59,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📧 Contact
 
-Your Name - [@yourusername](andrej.cicmansky@gmail.com)
+Your Name - [andrej.cicmansky@gmail.com](andrej.cicmansky@gmail.com)
 
 Project Link: [https://github.com/yourusername/FactFusion](https://github.com/yourusername/FactFusion)
 
