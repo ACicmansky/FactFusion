@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     result = result.length > 4000 ? result.substring(0, 4000) : result;
     const prompt = `Analyze {Text} based on your knowledge base and training data, find false statements or unsupported claims, and for each, prepare {Output}: one or two sentences explaining inconsistencies.
-    Separate each statement in {Output} with <br><br> for empty lines.
+    Separate each statement in {Output} with <br><br> for empty lines. Print language that is used in {Text}.
     Print {Output} directly without headings or extra formatting
     {Text}=\n\n${result}`;
 
